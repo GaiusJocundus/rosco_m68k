@@ -83,6 +83,7 @@ as possible, and will be kept updated as firmware 2.0 is developed.
   * 2.2. Basic System Data Block (SDB)
   * 2.3. Extension Function Pointer Table (EFPT)
   * 2.4. Video IO Data Area (VDA)
+    * 2.4.1. Video Data Block (VDB)
   * 2.5. Firmware Reserved Area 1 (Internal)
   * 2.6. Firmware Reserved Area 2 (BSS)
 * 3. Character Devices
@@ -1646,7 +1647,34 @@ is dependent on the video subsystem in use.
 For example, this area may contain a framebuffer along with
 variables and data required by a video driver.
 
-TODO document layout when video is V9958!
+## 2.4.1. Video IO Block (VDB)
+
+**Start Address**: 0x1140
+**End Address**: 0x117F
+**Size**: 0x40 (64 bytes)
+
+This block of 16 longs is reserved for publicly-available data about installed
+video systems. It may be populated by the firmware during detection, or by 
+video drivers at load time.
+
+| Address | Size | Description                                               |
+|---------|------|-----------------------------------------------------------|
+| 0x1140  | 4    | VDB Magic (0xC0C010C0)                                    |
+| 0x1144  | 4    | Reserved                                                  |
+| 0x1148  | 4    | Reserved                                                  |
+| 0x114C  | 4    | Reserved                                                  |
+| 0x1150  | 4    | Reserved                                                  |
+| 0x1154  | 4    | Reserved                                                  |
+| 0x1158  | 4    | Reserved                                                  |
+| 0x115C  | 4    | Reserved                                                  |
+| 0x1160  | 4    | Reserved                                                  |
+| 0x1164  | 4    | Reserved                                                  |
+| 0x1168  | 4    | Reserved                                                  |
+| 0x116C  | 4    | Reserved                                                  |
+| 0x1170  | 4    | Reserved                                                  |
+| 0x1174  | 4    | Reserved                                                  |
+| 0x1178  | 4    | Reserved                                                  |
+| 0x117C  | 4    | Xosera base address (or 0 if not detected)                |
 
 ## 2.5. Firmware Reserved Area 1 (Internal)
 
@@ -1682,7 +1710,7 @@ Most significant word is flags, least significant word is split into major
 
 ```
 bit 0 - 11: Reserved
-bit 12    : Supports SDB_XOSERABASE field (Version 2.5+)
+bit 12    : Supports Video Data Block (Version 2.5+)
 bit 13    : Flashable ROM (i.e. HUGEROM).
 bit 14    : Requires larger system data area
 bit 15    : Snapshot version

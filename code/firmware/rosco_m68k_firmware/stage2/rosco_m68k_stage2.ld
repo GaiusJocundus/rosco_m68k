@@ -18,6 +18,10 @@ PROVIDE(_SDB_RSRVD_413  = 0x00000413);  /* SDB reserved                 */
 PROVIDE(_SDB_MEM_SIZE   = 0x00000414);  /* contiguous memory size       */
 PROVIDE(_SDB_UART_BASE  = 0x00000418);  /* UART base address            */
 PROVIDE(_SDB_CPU_INFO   = 0x0000041C);  /* CPU Info (model and speed)   */
+PROVIDE(_VDB            = 0x00001140);  /* Video Data Block             */
+PROVIDE(_VDB_MAGIC      = 0x00001140);  /* VDB magic number             */
+PROVIDE(_VDB_XOSERABASE = 0x0000117C);  /* Xosera device base address   */
+
 
 SECTIONS
 {

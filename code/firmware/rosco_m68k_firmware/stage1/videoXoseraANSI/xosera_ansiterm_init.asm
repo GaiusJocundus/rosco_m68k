@@ -44,7 +44,7 @@ XANSI_CON_DATA_END      equ     $57F            ; 128 bytes reserved (~0x60 used
 
 ; This verifies it is safe to touch Xosera memory (something HW responding via DTACK)
 ;
-; Stores base address in SDB_XOSERABASE as a side-effect.
+; Stores base address in VDB_XOSERABASE as a side-effect.
 XANSI_HAVE_XOSERA::
                 move.l  a0,-(sp)
                 jsr     INSTALL_TEMP_BERR_HANDLER
@@ -57,7 +57,8 @@ XANSI_HAVE_XOSERA::
                 tst.b   BERR_FLAG
                 bne.s   .NOXVID
 
-                move.l  a0,SDB_XOSERABASE
+                move.l  a0,VDB_XOSERABASE
+                move.l  a0,SDB_RESERVED         ; TODO this is temporary to ease toolchain switchover
                 moveq.l #1,d0
                 bra.s   .DONE
 

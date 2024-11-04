@@ -150,7 +150,8 @@ INITSDB:
     move.l  #$C001C001,SDB_STATUS       ; OK OSHI Code
     move.w  #50,SDB_TICKCNT             ; Heartbeat flash counter at 50 (1 per second)
     move.w  #$FF00,SDB_SYSFLAGS         ; Initial system flags word (enable LEDs and CTS)
-    move.b  #0,SDB_XOSERABASE           ; Base address for Xosera (where fitted, populated during detection)
+    move.l  #$C0C010C0,VDB_MAGIC        ; VDB Magic number (for identification)
+    move.l  #0,VDB_XOSERABASE           ; Base address for Xosera device (where fitted, populated during detection)
     move.l  #0,SDB_UPTICKS              ; Zero upticks
     move.l  #RAMLIMIT,SDB_MEMSIZE       ; Default memory size
     move.l  #0,SDB_UARTBASE             ; Clear before UART detection

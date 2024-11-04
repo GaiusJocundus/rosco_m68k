@@ -16,7 +16,7 @@
 ;
 ; Flags:
 ; bit 0 - 11: Reserved
-; bit 12    : Supports SDB_XOSERABASE field (Version 2.5+)
+; bit 12    : Supports Video Data Block (Version 2.5+)
 ; bit 13    : Flashable ROM (i.e. HUGEROM).
 ; bit 14    : Requires larger system data area
 ; bit 15    : Snapshot version

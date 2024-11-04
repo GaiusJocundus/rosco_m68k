@@ -174,7 +174,7 @@ static uint32_t expand_8_pixel_font_line(uint8_t line) {
 }
 
 bool backend_init(void) {
-    xosera_ptr = ((volatile xmreg_t *)(((*((volatile uint32_t*)0x410)))));
+    xosera_ptr = ((volatile xmreg_t *)(((*((volatile uint32_t*)&_VDB_XOSERABASE)))));
     input_state = NORMAL;
 
     // setup uart_device for kermit check

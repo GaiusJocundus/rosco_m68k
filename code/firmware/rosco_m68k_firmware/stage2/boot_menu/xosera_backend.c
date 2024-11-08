@@ -25,6 +25,8 @@
 #include "view.h"
 #include "backend.h"
 
+extern char _VDB_XOSERABASE[];  // provided by stage2/rosco_m68k_stage2.ld
+
 // This is _probably_ no longer needed, but leaving it here for a short while
 // in case we need to do any further tests...
 //#define BLIT_WAIT_HACK

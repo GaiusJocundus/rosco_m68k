@@ -58,9 +58,10 @@ typedef uint32_t KRESULT;
 static uint32_t* VERSION = (uint32_t*)&_FIRMWARE_REV;
 static uint32_t* FW_MEMSIZE = (uint32_t*)0x414;
 
-extern uint32_t GET_CPU_ID();
 extern void INSTALL_BERR_HANDLER();
 extern void RESTORE_BERR_HANDLER();
+
+static volatile SystemDataBlock* const sdb = (volatile SystemDataBlock*)0x400;
 
 static void zeromeminfo(volatile MEMINFO *header) {
   uint8_t *ptr = (uint8_t*)header;
@@ -208,14 +209,6 @@ static KRESULT build_memory_map(volatile MEMINFO *header) {
     return KFAILURE_NORESOURCE;
   }
 
-  // MAP IO - Just create a block for this...
-  // Create a block for IO space
-  blocks[current_block].block_start = 0xF80000;
-  blocks[current_block].block_size = 0x40000;
-  blocks[current_block].flags = RAMBLOCK_FLAG_MAPPEDIO;
-
-  current_block++;
-
   // MAP ROM
   uint32_t rom_size = count_rom_size();
 
@@ -243,6 +236,13 @@ static KRESULT build_memory_map(volatile MEMINFO *header) {
         RAMBLOCK_FLAG_SYSTEM    |
         RAMBLOCK_FLAG_SHADOW;
   }
+
+  // MAP IO - Just create a block for this...
+  // Create a block for IO space
+  current_block++;
+  blocks[current_block].block_start = 0xF80000;
+  blocks[current_block].block_size = 0x40000;
+  blocks[current_block].flags = RAMBLOCK_FLAG_MAPPEDIO;
 
   printf("\r");
   return KRESULT_SUCCESS;
@@ -298,8 +298,8 @@ static void print_block(uint8_t i, MEMBLOCK *block) {
   printf("\n");
 }
 
-char* get_cpu_display_name(uint32_t cpu_id) {
-  switch (cpu_id) {
+char* get_cpu_display_name() {
+  switch (sdb->cpu_model) {
     case 0:
       return "MC68000";
     case 1:
@@ -322,7 +322,8 @@ static void show_banner() {
   uint16_t wver = (*VERSION) * 0x0000FFFF;
   uint8_t major = ((*VERSION) & 0x0000FF00) >> 8;
   uint8_t minor = (*VERSION) & 0x000000FF;
-  char *cpu_name = get_cpu_display_name(GET_CPU_ID());
+
+  char *cpu_name = get_cpu_display_name();
 
   if (major == 0x07 && minor == 0x00) {
     // special case - 1.0 didn't include version
@@ -330,18 +331,22 @@ static void show_banner() {
     minor = 0x01;
   }
 
+  uint32_t speed = sdb->cpu_speed / 1000;
+  int speed_whole = speed / 10;
+  int speed_frac = speed % 10;
+  
   printf("\033[H\033[2J");
   printf("***********************************************************\n");
   printf("*                                                         *\n");
   printf("*          \033[93mrosco_m68k\033[m SysInfo & MemCheck utility          *\n");
-  printf("*        %s CPU with Firmware ", cpu_name);
+  printf("*   %s CPU @ %2d.%1d MHz with Firmware ", cpu_name, speed_whole, speed_frac);
   printf("%x.%02x", major, minor);  // hex version code
   if (snapshot) {
     printf(" [SNAPSHOT]");
   } else {
     printf(" [RELEASE ]");
   }
-  printf("        *\n");
+  printf("  *\n");
   if (wver >= 0x0120) {
     printf("* Firmware reports %8ld bytes total contiguous memory *\n", *FW_MEMSIZE);
   }
@@ -399,7 +404,7 @@ int main(int argc, char **argv) {
   delay(180000);  // wait a bit for terminal window/serial
   show_banner();
 
-  if (GET_CPU_ID() == 0) {
+  if (sdb->cpu_model == 0) {
     printf("Memcheck requires 68010 or higher, but found a 68000; Exiting\n\n");
     return 1;
   }
@@ -434,8 +439,10 @@ int main(int argc, char **argv) {
     if (header->blocks[i].block_size == 0) {
       break;
     }
-    // if onboard or expansion memory block
-    if ((header->blocks[i].flags & (RAMBLOCK_FLAG_ONBOARD | RAMBLOCK_FLAG_EXPANSION)) != 0) {
+    // if onboard or expansion memory block and not ROM
+    if ((header->blocks[i].flags & (RAMBLOCK_FLAG_ONBOARD | RAMBLOCK_FLAG_EXPANSION)) != 0 &&
+      (header->blocks[i].flags & RAMBLOCK_FLAG_READONLY) == 0) {
+
       // block too low, skip it
       if (header->blocks[i].block_start + header->blocks[i].block_size < (uintptr_t)memtest_start) {
         continue;

@@ -50,7 +50,7 @@ The hardware specifications for the rosco_m68k are:
 * Programmable in assembly, C and (a limited subset of) C++.
 * Easy68K-compatible* TRAP 15 (IO) handler
 * A growing collection of system libraries and utility code
-* Custom Homebrew tap with toolchain - assembly built with VASM; C/C++ built with GCC 10.2.
+* Custom Homebrew tap with toolchain - assembly built with VASM; C/C++ built with GCC 13.3.
 
 (*) The firmware is _mostly_ Easy68K compatible - certain functions are not implemented due to the serial nature of IO.
 

@@ -10,20 +10,44 @@ toolchain with the following commands:
 
 ```bash
 brew tap rosco-m68k/toolchain
-brew install rosco-m68k-toolchain@13.rb srecord minipro
+brew install rosco-m68k-toolchain@13 srecord minipro
 ```
 
 This will automatically download, build and install all the dependencies that
 you _would have_ built if you'd followed the instructions in part two.
 
-It'll take a few minutes, as it builds binutils and GCC from source. Once it's
-done, you're ready to rock.
+It may take a few minutes, as on some systems it builds binutils and GCC from source.
+Once it's done, you're ready to rock.
+
+> [!NOTE]
+> Depending on what other software you have installed via brew, it's possible for
+> the toolchain install to succeed, but the link to fail. If this happens, you'll
+> still see `m68k-elf-rosco-gcc: no such file or directory` or similar when trying
+> to build.
+>
+> Should this happen, it can be fixed with the following command:
+>
+> ```bash
+> brew link --overwrite rosco-m68k-toolchain@13
+> ```
+
 
 ## The Slightly-Less Easy Way - Building the Toolchain
 
 See https://github.com/rosco-m68k/newlib-rosco-build/blob/main/README.md
 
 ## The Old Way - Building the Bare Metal Toolchain (advanced users)
+
+> [!WARNING]
+> You almost certainly **do not want to do this**.
+>
+> The bare-metal toolchain is no longer used by the rosco_m68k project
+> after firmware version 2.42, and is maintained primarily as a convenience
+> for the non-rosco Motorola 68k community.
+>
+> Unless you are building for a release branch (2.42 or earlier), following the
+> instructions here **will not result in a compiler that can build our firmware
+> or examples**.
 
 0. Configure build environment (Linux only)
 
